@@ -85,15 +85,22 @@ I = I['I']
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2)
 ax1.imshow(I)
 
+I_hsv = rgb2hsv(I)
+V = I_hsv[:,:,2]
+
 #%% linear scaling
 # implement your method for linear scaling here:
-I_linear = np.array(I)
+I_linear = np.array(I_hsv)
+s = 1./np.max(V)            # max(V) is 1 so this scaling doesn't change anything
+V_linear = V * s
+I_linear[:,:,2] = V_linear
+I_linear = hsv2rgb(I_linear)
 
 ax2.imshow(np.clip(I_linear, 0, 1))
 #plt.show()
 
 #%% gamma correction
-I_gamma = np.array(I)
+I_gamma = np.array(I_hsv)
 gamma = 1 / 4. # try correction with this gamma value
 
 # implement your method for gamma correction here
