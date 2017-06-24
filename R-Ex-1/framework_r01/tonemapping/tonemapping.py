@@ -104,8 +104,17 @@ I_gamma = np.array(I_hsv)
 gamma = 1 / 4. # try correction with this gamma value
 
 # implement your method for gamma correction here
-
+V_gamma = V**gamma
+I_gamma[:,:,2] = V_gamma
+I_gamma = hsv2rgb(I_gamma)
 ax3.imshow(np.clip(I_gamma, 0, 1))
+
+#try with scaling
+s = 1./np.max(V_gamma)
+V_gamma *= s
+I_gamma[:,:,2] = V_gamma
+I_gamma = hsv2rgb(I_gamma)
+ax4.imshow(np.clip(I_gamma, 0, 1))
 #plt.show()
 
 #%% histogram adjustment
