@@ -127,7 +127,21 @@ boxfilter = np.ones((9, 9)) / (9 * 9)
 for c in range(0, 3):
     I_filtered[:, :, c] = sig.convolve2d(I_filtered[:, :, c], boxfilter, mode='same', boundary='symm')
 
+I_hist = np.array(I_hsv)
+
 # implement your method for histogram scaling here
+
+I_filtered_hsv = rgb2hsv(I_filtered)
+V_filtered = I_filtered_hsv[:,:,2]
+
+histo = np.histogram(V_filtered, nbins)
+c_distro = np.cumsum(histo)
+c_distro /= c_distro[nbins-1]
+
+V_hist = 0 + (1 - 0) * c_distro[V_filtered]
+I_hist[:,:,2] = V_hist
+I_hist = hsv2rgb(I_hist)
+
 # hint: Take a look at the functions numpy.histogram(), numpy.cumsum() and numpy.interp()
 # hint: You might want to perform the actual tonemapping by transforming the RGB
 # image into the HSV color space and then only work on the V channel. Transform
