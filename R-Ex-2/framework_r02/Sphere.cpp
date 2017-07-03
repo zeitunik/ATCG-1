@@ -53,6 +53,31 @@ CSphere::Intersect(const CRay& clRay, RealType t0, RealType t1, TTracingContext&
 		pclShader  - Material of sphere
 	*/
 
+	VectorType3 d = clRay.GetDir();
+	VectorType3 o = clRay.GetOrigin();
+	VectorType3 diff = o - m_v3Center;
+	
+	RealType A = dot(d, d);
+	RealType B = 2*dot(d, diff);
+	RealType C = dot(diff, diff) - m_rRadius * m_rRadius;
+	RealType D = B*B - 4*A*C;
+
+	RealType t;
+	if ( D >= 0)
+	{
+		t = (-B - sqrt(B*B - 4*A*C)) / (2*A); 
+		if(t < t0 || t > t1) return false;
+
+		tContext.t = t;
+		VectorType3 i = clRay.Evaluate(t);
+		VectorType3 i_c = i - m_v3Center;
+		
+		tContext.v3Normal = i_c/m_rRadius;
+		tContext.v3HitPoint = i;
+		tContext.pclShader = GetShader();
+
+		return true;
+	}
 
 	return false;
 }
