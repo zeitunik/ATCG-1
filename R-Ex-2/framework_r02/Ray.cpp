@@ -35,6 +35,9 @@ CRay::ReflectedRay(const VectorType3& v3Point,  const VectorType3& v3Normal) con
 	*/
 
 	CRay result;
+	// r = d − 2 <n | d> n
+
+	result = m_v3Dir - 2 * dot(v3Normal, m_v3Dir) * v3Normal;
 
 	return result;
 };
@@ -55,6 +58,25 @@ CRay::RefractedRay(const VectorType3& v3Point,
 
 		Hint: We assume that the refraction occurs between a material with the given refractive index and air (refractive index ~1).
 	*/
+
+	//t = c_n n + c_d d
+	RealType etta; 	
+	RealType d = dot(v3Normal, m_v3Dir);
+	
+	if (d < 0 ) 
+		 etta = rRefractiveIndex;
+	else 
+		etta = 1/rRefractiveIndex;
+
+	RealType c = 1 / etta;
+	RealType value = 1 - c*c * (1 - d*d);
+	if (value < 0)	// total reflection
+		return false;
+
+	RealType c_n = -c * d - sqrt(value);
+	RealType c_c = c;
+	
+	clRefractedRay = c_n * v3Normal + c_d * m_v3Dir;
 
 	return true;
 };
