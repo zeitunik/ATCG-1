@@ -74,6 +74,7 @@ CSphere::Intersect(const CRay& clRay, RealType t0, RealType t1, TTracingContext&
 		
 		tContext.v3Normal = i_c/m_rRadius;
 		tContext.v3HitPoint = i;
+		tContext.v2TexCoord = Cartesian2Polar(i_c);
 		tContext.pclShader = GetShader();
 
 		return true;
