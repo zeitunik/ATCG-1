@@ -37,7 +37,8 @@ CRay::ReflectedRay(const VectorType3& v3Point,  const VectorType3& v3Normal) con
 	CRay result;
 	// r = d − 2 <n | d> n
 
-	result = m_v3Dir - 2 * dot(v3Normal, m_v3Dir) * v3Normal;
+	result.SetOrigin(v3Point);
+	result.SetDir(m_v3Dir - 2 * dot(v3Normal, m_v3Dir) * v3Normal);
 
 	return result;
 };
@@ -74,9 +75,10 @@ CRay::RefractedRay(const VectorType3& v3Point,
 		return false;
 
 	RealType c_n = -c * d - sqrt(value);
-	RealType c_c = c;
+	RealType c_d = c;
 	
-	clRefractedRay = c_n * v3Normal + c_d * m_v3Dir;
+	clRefractedRay.SetOrigin(v3Point);
+	clRefractedRay.SetDir(c_n * v3Normal + c_d * m_v3Dir);
 
 	return true;
 };

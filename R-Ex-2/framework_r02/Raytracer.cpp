@@ -53,6 +53,29 @@ CWhitted::TraceRay(const CSurface*   pclScene,
 		Hint: You will need an instance of the structure TTracingContext, which contains all necessary arguments for tracing rays
 	*/
 
+	TTracingContext tContext;
+	if ( pclScene->Intersect(crclRay, 0., 100., tContext) )		// we have intersection with the scene
+	{
+		ColorType c = Shade(pclScene, tContext);
+		ColorType refl = 0., refr = 0.;
+
+		/*if(tContext.pclShader->IsSpecular())
+		{
+			CRay reflected = crclRay.ReflectedRay(tContext.v3HitPoint, tContext.v3Normal);
+			refl = TraceRay(pclScene, reflected, uiDepth);
+		}
+		if(tContext.pclShader->IsTransparent())
+		{
+			CRay refracted;
+			if(RefractedRay(tContext.v3HitPoint, tContext.v3Normal, tContext.pclShader->GetRefractiveIndex(), refracted))
+			{
+				refr = TraceRay(pclScene, refracted, uiDepth);
+			}
+		}*/
+	}
+
+
+
 	return ColorType(0.);
 
 }
@@ -88,6 +111,28 @@ CWhitted::Shade( const CSurface*   pclScene,
 	*/
 
 	ColorType color(0.);
+
+	color = tContext.pclShader->ShadeAmbient(1.0);
+
+	for (int i = 0; i < m_LightList.size(); ++i)
+	{
+		LightListType::iterator it = m_LightList.begin();
+		std::advance(it, i);
+
+		CRay shadow_ray;
+		shadow_ray.SetOrigin(tContext.v3HitPoint);
+		RealType domain;
+		ColorType col;
+		(*it)->ShadowFeeler(1, shadow_ray, domain, col);
+		TTracingContext tContext_shadow;
+		
+		if(!pclScene->Intersect(shadow_ray, 0., 100., tContext_shadow))	// if no intersection with scene ...
+		{
+			tContext.v3Incoming = shadow_ray.GetDir();
+			tContext.colLightIntensity = col;
+			color += tContext.pclShader->Shade(tContext);
+		}
+	}
 
 	return color;
 }
