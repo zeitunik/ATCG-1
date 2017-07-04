@@ -63,7 +63,7 @@ CPinholeCamera::GenerateRay(RealType x, RealType y, RealType rWidth, RealType rH
 
 	// VectorType3 look_dir = (GetLookAt()-eye).normalize();
 
-	VectorType3 dir(left + x*x_step + x_step/2., bottom + y*y_step + y_step/2., GetFocalLength());
+	VectorType3 dir(left + x*x_step + x_step/2., top - y*y_step - y_step/2., GetFocalLength());
 	dir = m_m33ONB.Transpose()*dir + eye;		// transform to world coordinates
 	// std::cout << x << "\t" << y << "\t" << dir << std::endl;
 	

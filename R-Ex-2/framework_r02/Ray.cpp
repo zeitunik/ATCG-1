@@ -38,7 +38,9 @@ CRay::ReflectedRay(const VectorType3& v3Point,  const VectorType3& v3Normal) con
 	// r = d − 2 <n | d> n
 
 	result.SetOrigin(v3Point);
-	result.SetDir(m_v3Dir - 2 * dot(v3Normal, m_v3Dir) * v3Normal);
+	VectorType3 dir = m_v3Dir;
+	dir.normalize();
+	result.SetDir(dir - 2 * dot(v3Normal, dir) * v3Normal);
 
 	return result;
 };
@@ -62,13 +64,18 @@ CRay::RefractedRay(const VectorType3& v3Point,
 
 	//t = c_n n + c_d d
 	RealType etta; 	
-	RealType d = dot(v3Normal, m_v3Dir);
+	VectorType3 normal = v3Normal;
+	RealType d = dot(normal, m_v3Dir);
 	
 	if (d < 0 ) 
 		 etta = rRefractiveIndex;
-	else 
+	else
+	{
+		normal = -v3Normal;
 		etta = 1/rRefractiveIndex;
-
+	} 
+		
+	d = dot(normal, m_v3Dir);
 	RealType c = 1 / etta;
 	RealType value = 1 - c*c * (1 - d*d);
 	if (value < 0)	// total reflection
@@ -78,7 +85,7 @@ CRay::RefractedRay(const VectorType3& v3Point,
 	RealType c_d = c;
 	
 	clRefractedRay.SetOrigin(v3Point);
-	clRefractedRay.SetDir(c_n * v3Normal + c_d * m_v3Dir);
+	clRefractedRay.SetDir(c_n * normal + c_d * m_v3Dir);
 
 	return true;
 };

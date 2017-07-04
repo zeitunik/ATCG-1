@@ -203,7 +203,7 @@ int main( int argc, char **argv ) {
 			break;
 	}
 
-	unsigned nproc = 1;//std::thread::hardware_concurrency();
+	unsigned nproc = std::thread::hardware_concurrency();
 	if (!nproc) {
 		nproc = 1;
 	}
